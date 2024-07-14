@@ -5,7 +5,12 @@
  */
 package com.sg.jdbcexample;
 
+import com.mysql.cj.jdbc.MysqlDataSource;
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Scanner;
 
 /**
@@ -15,10 +20,20 @@ import java.util.Scanner;
 public class ToDoListMain {
 
     private static Scanner sc;
+    private static DataSource ds;
 
     public static void main(String[] args) {
 
         sc = new Scanner(System.in);
+
+        try {
+            ds = getDataSource();
+        }
+        catch(SQLException e) {
+            System.out.println("Error connecting to database");
+            System.out.println(e.getMessage());
+            System.exit(0);
+        }
 
         do {
             System.out.println("To-Do List");
@@ -58,7 +73,17 @@ public class ToDoListMain {
     }
 
     private static void displayList() throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try (Connection conn = ds.getConnection()) {
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT * FROM todo");
+            while (rs.next()) {
+                System.out.printf("%s: %s -- %s -- %s\n",
+                        rs.getString("id"),
+                        rs.getString("todo"),
+                        rs.getString("note"),
+                        rs.getString("finished"));
+            }
+        }
     }
 
     private static void addItem() throws SQLException {
@@ -71,5 +96,17 @@ public class ToDoListMain {
 
     private static void removeItem() throws SQLException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    private static DataSource getDataSource() throws SQLException {
+        MysqlDataSource ds = new MysqlDataSource();
+        ds.setServerName("localhost");
+        ds.setDatabaseName("todoDB");
+        ds.setUser("jdbc-practice");
+        ds.setPassword("jdbc-practice");
+        ds.setUseSSL(false);
+        ds.setAllowPublicKeyRetrieval(true);
+
+        return ds;
     }
 }
