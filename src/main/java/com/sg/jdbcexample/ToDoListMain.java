@@ -7,10 +7,7 @@ package com.sg.jdbcexample;
 
 import com.mysql.cj.jdbc.MysqlDataSource;
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.Scanner;
 
 /**
@@ -83,11 +80,26 @@ public class ToDoListMain {
                         rs.getString("note"),
                         rs.getString("finished"));
             }
+            System.out.println();
         }
     }
 
     private static void addItem() throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        System.out.println("Add Item");
+        System.out.println("What is the task?");
+        String task = sc.nextLine();
+        System.out.println("Any additional notes?");
+        String note = sc.nextLine();
+
+        try (Connection conn = ds.getConnection()) {
+            String insertStr = "INSERT INTO todo (todo, note) VALUES (?, ?)";
+            PreparedStatement stmt = conn.prepareStatement(insertStr);
+            stmt.setString(1, task);
+            stmt.setString(2, note);
+
+            stmt.executeUpdate();
+            System.out.println("Added successfully\n");
+        }
     }
 
     private static void updateItem() throws SQLException {
