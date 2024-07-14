@@ -92,8 +92,8 @@ public class ToDoListMain {
         String note = sc.nextLine();
 
         try (Connection conn = ds.getConnection()) {
-            String insertStr = "INSERT INTO todo (todo, note) VALUES (?, ?)";
-            PreparedStatement stmt = conn.prepareStatement(insertStr);
+            String sql = "INSERT INTO todo (todo, note) VALUES (?, ?)";
+            PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, task);
             stmt.setString(2, note);
 
@@ -103,7 +103,66 @@ public class ToDoListMain {
     }
 
     private static void updateItem() throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        System.out.println("Enter the item ID to be updated:");
+        String id = sc.nextLine();
+
+        try (Connection conn = ds.getConnection()) {
+            //Get the desired item to be updated & map to an object
+            String sql = "SELECT * FROM todo WHERE id = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setString(1, id);
+
+            ResultSet rs = stmt.executeQuery();
+            rs.next();
+
+            ToDo todoObj = new ToDo();
+            todoObj.setId(rs.getInt("id"));
+            todoObj.setTodo(rs.getString("todo"));
+            todoObj.setNote(rs.getString("note"));
+            todoObj.setFinished(rs.getBoolean("finished"));
+
+            //Get desired change from user
+            boolean finished = false;
+            while (!finished) {
+                System.out.println();
+                System.out.println("1. ToDo - " + todoObj.getTodo());
+                System.out.println("2. Note - " + todoObj.getNote());
+                System.out.println("3. Finished - " + todoObj.isFinished());
+                System.out.println("Select an item to change or press enter when changes are complete");
+
+                String choice = sc.nextLine();
+                switch (choice) {
+                    case "1":
+                        System.out.println("Enter new ToDo:");
+                        String todo = sc.nextLine();
+                        todoObj.setTodo(todo);
+                        break;
+                    case "2":
+                        System.out.println("Enter new Note:");
+                        String note = sc.nextLine();
+                        todoObj.setNote(note);
+                        break;
+                    case "3":
+                        System.out.println("Toggling Finished to " + !todoObj.isFinished());
+                        todoObj.setFinished(!todoObj.isFinished());
+                        break;
+                    default:
+                        finished = true;
+                        break;
+                }
+            }
+
+            //Update item in database
+            sql = "UPDATE todo SET todo = ?, note = ?, finished = ? WHERE id = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, todoObj.getTodo());
+            stmt.setString(2, todoObj.getNote());
+            stmt.setBoolean(3, todoObj.isFinished());
+            stmt.setInt(4, todoObj.getId());
+
+            stmt.executeUpdate();
+            System.out.println("Updated successfully\n");
+        }
     }
 
     private static void removeItem() throws SQLException {
