@@ -90,7 +90,15 @@ public class App implements CommandLineRunner {
     }
 
     private void addItem() throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        System.out.println("Add Item");
+        System.out.println("What is the task?");
+        String task = sc.nextLine();
+        System.out.println("Any additional notes?");
+        String note = sc.nextLine();
+
+        String sql = "INSERT INTO todo(todo, note) VALUES(?,?)";
+        jdbc.update(sql, task, note);
+        System.out.println("Added successfully\n");
     }
 
     private void updateItem() throws SQLException {
