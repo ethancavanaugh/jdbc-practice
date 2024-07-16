@@ -7,6 +7,7 @@ package com.sg.jdbctemplateexample;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Scanner;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,7 +76,17 @@ public class App implements CommandLineRunner {
     }
 
     private void displayList() throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        String sql = "SELECT * FROM todo";
+        List<ToDo> todos = jdbc.query(sql, new ToDoMapper());
+
+        for (ToDo td : todos) {
+            System.out.printf("%s: %s -- %s -- %s\n",
+                    td.getId(),
+                    td.getTodo(),
+                    td.getNote(),
+                    td.isFinished());
+        }
+        System.out.println();
     }
 
     private void addItem() throws SQLException {
