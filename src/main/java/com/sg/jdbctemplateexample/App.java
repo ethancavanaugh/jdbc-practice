@@ -102,7 +102,46 @@ public class App implements CommandLineRunner {
     }
 
     private void updateItem() throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        System.out.println("Enter the item ID to be updated:");
+        String id = sc.nextLine();
+
+        String sql = "SELECT * FROM todo WHERE id = ?";
+        ToDo todoObj = jdbc.queryForObject(sql, new ToDoMapper(), id);
+
+        //Allow user to update multiple items
+        boolean finished = false;
+        while (!finished) {
+            System.out.println();
+            System.out.println("1. ToDo - " + todoObj.getTodo());
+            System.out.println("2. Note - " + todoObj.getNote());
+            System.out.println("3. Finished - " + todoObj.isFinished());
+            System.out.println("Select an item to change or press enter when changes are complete");
+
+            String choice = sc.nextLine();
+            switch (choice) {
+                case "1":
+                    System.out.println("Enter new ToDo:");
+                    String todo = sc.nextLine();
+                    todoObj.setTodo(todo);
+                    break;
+                case "2":
+                    System.out.println("Enter new Note:");
+                    String note = sc.nextLine();
+                    todoObj.setNote(note);
+                    break;
+                case "3":
+                    System.out.println("Toggling Finished to " + !todoObj.isFinished());
+                    todoObj.setFinished(!todoObj.isFinished());
+                    break;
+                default:
+                    finished = true;
+                    break;
+            }
+        }
+
+        sql = "UPDATE todo SET todo = ?, note = ?, finished = ? WHERE id = ?";
+        jdbc.update(sql, todoObj.getTodo(), todoObj.getNote(), todoObj.isFinished(), todoObj.getId());
+        System.out.println("Updated successfully\n");
     }
 
     private void removeItem() throws SQLException {
