@@ -145,7 +145,12 @@ public class App implements CommandLineRunner {
     }
 
     private void removeItem() throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        System.out.println("Enter the item ID to be deleted:");
+        String id = sc.nextLine();
+
+        String sql = "DELETE FROM todo WHERE id = ?";
+        jdbc.update(sql, id);
+        System.out.println("Deleted successfully\n");
     }
 
     private static final class ToDoMapper implements RowMapper<ToDo> {
