@@ -5,11 +5,16 @@
  */
 package com.sg.jdbctemplateexample;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Scanner;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 
 /**
  *
@@ -18,6 +23,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class App implements CommandLineRunner {
 
+    @Autowired
+    private JdbcTemplate jdbc;
     private static Scanner sc;
 
     public static void main(String args[]) {
@@ -83,4 +90,17 @@ public class App implements CommandLineRunner {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    private static final class ToDoMapper implements RowMapper<ToDo> {
+        @Override
+        public ToDo mapRow(ResultSet rs, int i) throws SQLException {
+            ToDo td = new ToDo();
+            td.setId(rs.getInt("id"));
+            td.setTodo(rs.getString("todo"));
+            td.setNote(rs.getString("note"));
+            td.setFinished(rs.getBoolean("finished"));
+            return td;
+        }
+    }
 }
+
+
