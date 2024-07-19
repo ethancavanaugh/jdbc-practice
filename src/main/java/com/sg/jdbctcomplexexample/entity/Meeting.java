@@ -3,6 +3,7 @@ package com.sg.jdbctcomplexexample.entity;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  *
@@ -54,6 +55,17 @@ public class Meeting {
     public void setAttendees(List<Employee> attendees) {
         this.attendees = attendees;
     }
-    
-    
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Meeting meeting = (Meeting) o;
+        return id == meeting.id && Objects.equals(name, meeting.name) && Objects.equals(time, meeting.time) && Objects.equals(room, meeting.room) && Objects.equals(attendees, meeting.attendees);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, time, room, attendees);
+    }
 }
