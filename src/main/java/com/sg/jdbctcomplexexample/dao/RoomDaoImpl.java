@@ -57,7 +57,7 @@ public class RoomDaoImpl implements RoomDao {
     @Transactional
     public void deleteRoomById(int id) {
         String deleteEmployeeByRoom = "DELETE me.* FROM meeting_employee me " +
-                "INNER JOIN meeting m ON me.meetingId = m.id WHERE m.id = ?";
+                "INNER JOIN meeting m ON me.meetingId = m.id WHERE m.roomId = ?";
         jdbc.update(deleteEmployeeByRoom, id);
 
         String deleteMeetingByRoom = "DELETE FROM meeting WHERE roomId = ?";
